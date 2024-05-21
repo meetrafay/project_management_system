@@ -1,0 +1,15 @@
+# Ignore Python bytecode
+*.pyc
+
+# Ignore Django migrations
+*/migrations/*.py
+
+# Ignore media and static files
+media/
+static/
+
+# Ignore venv directory
+venv/
+
+# Ignore OS-specific files
+*.DS_Store
