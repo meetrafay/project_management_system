@@ -97,3 +97,9 @@ class CreateTaskSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("No permission to create task")
 
         return task
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'status', 'due_date', 'project', 'created_by']
