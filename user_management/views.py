@@ -1,6 +1,7 @@
 from django.forms import ValidationError
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import Project, Task
@@ -29,6 +30,29 @@ class AddProjectMember(generics.CreateAPIView):
             'message': 'Project members added successfully',
             'data': {}
         }, status=status.HTTP_201_CREATED)
+        
+        
+class DeleteProject(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request, pk):
+        user = request.user
+        project = Project.objects.filter(is_deleted=False, id=pk, created_by=user).first()
+        
+        if project:
+            project.soft_delete()
+            return Response({
+                'status': True,
+                'message': 'Project delete successfully',
+                'data': {}
+            }, status=status.HTTP_201_CREATED)
+            
+        else:
+            return Response({
+                'status': True,
+                'message': 'No project found',
+                'data': {}
+            }, status=status.HTTP_404_NOT_FOUND)
         
         
 class CreateTask(generics.CreateAPIView):
