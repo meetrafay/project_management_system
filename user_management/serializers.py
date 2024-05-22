@@ -20,7 +20,7 @@ class AddProjectMembersSerializer(serializers.Serializer):
 
     def validate_project_id(self, value):
         try:
-            project = Project.objects.get(id=value, is_deleted=False)
+            project = Project.objects.get(id=value, created_by=self.context['request'].user, is_deleted=False, )
         except Project.DoesNotExist:
             raise serializers.ValidationError("Project does not exist.")
         return value
@@ -75,9 +75,13 @@ class CreateTaskSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         print("=====", validated_data)
-        project = Project.objects.get(id=validated_data['project_id'])
-
         user = self.context['request'].user
+        project = Project.objects.get(id=validated_data['project_id'])
+        project_member = ProjectMember.objects.filter(project=project, user=user).first()
+        
+        if project_member is None:
+            raise serializers.ValidationError("User is not a member of the project.")
+
 
         permission_obj = TaskPermissions.objects.filter(
             permission='can_create',
@@ -102,4 +106,4 @@ class CreateTaskSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'status', 'due_date', 'project', 'created_by']
+        fields = ['id', 'title', 'description', 'status', 'due_date', 'project', 'created_by']

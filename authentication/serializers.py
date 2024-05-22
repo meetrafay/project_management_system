@@ -17,16 +17,21 @@ class UserSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError('Passwords must match')
+        elif User.objects.filter(email=data['email']).first():
+            raise serializers.ValidationError('user already exists')
         return data
 
     def create(self, validated_data):
-        user = User.objects.create_user(
+        user = User.objects.create(
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             email=validated_data['email'],
             username=validated_data['email'],
             password=validated_data['password']
         )
+        user.set_password(validated_data['password'])
+        user.save()
+        print(user.password)
 
         return user
     

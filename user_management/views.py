@@ -93,10 +93,9 @@ class DeleteTaskView(APIView):
         task = Task.objects.filter(is_deleted=False, pk=pk, created_by=request.user).first()
         if task:
 
-            # Check if the user has the 'can_delete' permission for this task
             task_permissions = TaskPermissions.objects.filter(project=task.project, user=request.user, permission='can_delete')
             if task_permissions.exists():
-                task.soft_delete()  # Use the soft_delete method to mark the task as deleted
+                task.soft_delete() 
                 return Response({'message': 'Task deleted successfully'})
             else:
                 return Response({'error': 'You do not have permission to delete this task'}, status=status.HTTP_200_OK)
