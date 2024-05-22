@@ -3,8 +3,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .models import Project
-from .serializers import CreateProjectSerializer, AddProjectMembersSerializer
+from .models import Project, Task
+from .serializers import CreateProjectSerializer, AddProjectMembersSerializer, CreateTaskSerializer
 
 # Create your views here.
 class ListCreateProjectView(generics.ListCreateAPIView):
@@ -29,3 +29,9 @@ class AddProjectMember(generics.CreateAPIView):
             'message': 'Project members added successfully',
             'data': {}
         }, status=status.HTTP_201_CREATED)
+        
+        
+class CreateTask(generics.CreateAPIView):
+    queryset = Task.objects.filter(is_deleted=False)
+    permission_classes = [IsAuthenticated]
+    serializer_class = CreateTaskSerializer
